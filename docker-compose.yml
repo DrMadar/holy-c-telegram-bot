@@ -8,8 +8,9 @@ services:
     container_name: terrystemple_bot
     restart: unless-stopped
     
-    # Use host network to access Ollama on Windows host
-    network_mode: "host"
+    # Windows: use bridge network with host.docker.internal
+    # Linux: use host network
+    network_mode: "bridge"
     
     volumes:
       # Persistent database
@@ -19,8 +20,12 @@ services:
       - ./personality.txt:/app/personality.txt:ro
     
     environment:
-      # Ollama runs on host Windows at localhost:11434
-      - OLLAMA_HOST=http://localhost:11434
+      # Ollama on Windows host accessible via host.docker.internal
+      - OLLAMA_HOST=http://host.docker.internal:11434
+    
+    # Add extra_hosts for Windows Docker Desktop
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     
     # Resource limits (optional)
     deploy:
@@ -38,5 +43,3 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-
-# No networks needed - using host network to access Ollama

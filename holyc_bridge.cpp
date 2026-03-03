@@ -649,24 +649,39 @@ private:
         string post_data = "{\"chat_id\":" + to_string(chat_id) + 
                           ",\"text\":\"" + escaped + "\"}";
         
-        http_request(url, post_data, true);
+        cout << "[DEBUG] Sending message to chat " << chat_id << endl;
+        string response = http_request(url, post_data, true);
+        
+        if (response.find("\"ok\":true") != string::npos) {
+            cout << "[DEBUG] Message sent successfully" << endl;
+        } else {
+            cout << "[ERROR] Failed to send message: " << response.substr(0, 200) << endl;
+        }
     }
     
     void ProcessUpdate(const string& update_json) {
         long long update_id = extract_json_int(update_json, "update_id");
+        
+        cout << "[DEBUG] Processing update_id=" << update_id << endl;
         
         if (update_id > last_update_id) {
             last_update_id = update_id;
         }
         
         size_t message_pos = update_json.find("\"message\":");
-        if (message_pos == string::npos) return;
+        if (message_pos == string::npos) {
+            cout << "[DEBUG] No 'message' field in update (might be edited_message or callback)" << endl;
+            return;
+        }
         
         string message_part = update_json.substr(message_pos);
         long long chat_id = extract_json_int(message_part, "id");
         string text = extract_json_string(message_part, "text");
         
-        if (text.empty()) return;
+        if (text.empty()) {
+            cout << "[DEBUG] Empty text in message" << endl;
+            return;
+        }
         
         cout << "[RECV] Chat " << chat_id << ": " << text << endl;
         
@@ -688,14 +703,28 @@ public:
                     "/getUpdates?offset=" + to_string(last_update_id + 1) + 
                     "&timeout=30";
         
+        cout << "[DEBUG] Polling Telegram API (offset=" << last_update_id + 1 << ")" << endl;
+        
         string response = http_request(url, "", true);
         
-        if (response.empty()) return;
+        if (response.empty()) {
+            cout << "[WARN] Empty response from Telegram API" << endl;
+            return;
+        }
+        
+        cout << "[DEBUG] Response length: " << response.length() << " bytes" << endl;
         
         size_t result_pos = response.find("\"result\":[");
-        if (result_pos == string::npos) return;
+        if (result_pos == string::npos) {
+            cout << "[WARN] No 'result' field in response" << endl;
+            return;
+        }
         
         size_t update_pos = response.find("{\"update_id\":", result_pos);
+        if (update_pos == string::npos) {
+            cout << "[DEBUG] No updates available" << endl;
+        }
+        
         while (update_pos != string::npos) {
             size_t next_update = response.find("{\"update_id\":", update_pos + 1);
             
