@@ -221,7 +221,25 @@ U0 HandleStartCommand(I64 chat_id) {
 }
 
 U0 HandleHelpCommand(I64 chat_id) {
-  U8 *help_text = "⛪ HOLY C BOT COMMANDS ⛪\n\n/start - Initialize divine connection\n/help - Show this help\n/echo <text> - Echo your words\n/info - Bot information\n/quote - Get Terry's wisdom\n/divine - Consult divine randomness\n/oracle <question> - Ask the divine oracle\n/transform <text> - Divine text transformation\n/ascii - Generate TempleOS ASCII art\n/math - Divine mathematics\n/bible - Random Bible verse\n/colors - TempleOS 16-color palette\n/memory save <text> - Save to memory\n/memory load - Load your memory\n/memory clear - Clear memory\n\nADMIN COMMANDS:\n/stats - Bot statistics\n\nSend any message for AI-powered response with divine inspiration.\n\n\"An idiot admires complexity, a genius admires simplicity.\" - Terry A. Davis";
+  U8 *help_text = "⛪ HOLY C BOT COMMANDS ⛪\n\n"
+    "📋 CORE:\n"
+    "/start /help /info /stats\n\n"
+    "🎮 GAMES:\n"
+    "/grow /growtop /dice /coin /rps /8ball\n\n"
+    "🔢 MATH:\n"
+    "/calc /math /prime /fib /factor /matrix\n\n"
+    "🔐 CRYPTO:\n"
+    "/hash /encode /decode /genkey /password\n\n"
+    "📝 TEXT:\n"
+    "/reverse /count /palindrome /wordcount\n\n"
+    "🎨 TEMPLEOS:\n"
+    "/ascii /colors /terry /templeos /640x480\n\n"
+    "🌌 OTHER:\n"
+    "/cosmos /planet /wisdom /joke /quote\n\n"
+    "💾 MEMORY:\n"
+    "/memory save/load/clear\n\n"
+    "Full list: /commands\n\n"
+    "💭 \"Simplicity is genius\" - Terry";
   SendMessage(chat_id, help_text);
 }
 
@@ -430,6 +448,166 @@ U0 ProcessMessage(I64 chat_id, U8 *text, I64 admin_id) {
       HandleMemoryCommand(chat_id, "clear", "");
     }
   }
+  // Astronomy plugin
+  else if (StrCmp(text, "/cosmos") == 0) {
+    HandleCosmosCommand(chat_id);
+  }
+  else if (StrNCmp(text, "/planet ", 8) == 0) {
+    HandlePlanetCommand(chat_id, text + 8);
+  }
+  // Wisdom plugin
+  else if (StrCmp(text, "/wisdom") == 0) {
+    HandleWisdomCommand(chat_id);
+  }
+  else if (StrCmp(text, "/proverb") == 0) {
+    HandleProverbCommand(chat_id);
+  }
+  // Games plugin
+  else if (StrCmp(text, "/dice") == 0) {
+    HandleDiceCommand(chat_id);
+  }
+  else if (StrCmp(text, "/coin") == 0) {
+    HandleCoinCommand(chat_id);
+  }
+  else if (StrNCmp(text, "/rps ", 5) == 0) {
+    HandleRPSCommand(chat_id, text + 5);
+  }
+  // Calculator plugin
+  else if (StrNCmp(text, "/calc ", 6) == 0) {
+    HandleCalcCommand(chat_id, text + 6);
+  }
+  // Time plugin
+  else if (StrCmp(text, "/time") == 0) {
+    HandleTimeCommand(chat_id);
+  }
+  // Crypto plugin
+  else if (StrNCmp(text, "/hash ", 6) == 0) {
+    HandleHashCommand(chat_id, text + 6);
+  }
+  else if (StrNCmp(text, "/encode ", 8) == 0) {
+    HandleEncodeCommand(chat_id, text + 8);
+  }
+  else if (StrNCmp(text, "/decode ", 8) == 0) {
+    HandleDecodeCommand(chat_id, text + 8);
+  }
+  else if (StrNCmp(text, "/genkey ", 8) == 0) {
+    I64 length = StrToI64(text + 8);
+    HandleGenKeyCommand(chat_id, length);
+  }
+  else if (StrNCmp(text, "/password ", 10) == 0) {
+    HandlePasswordCommand(chat_id, text + 10);
+  }
+  // Text plugin
+  else if (StrNCmp(text, "/reverse ", 9) == 0) {
+    HandleReverseCommand(chat_id, text + 9);
+  }
+  else if (StrNCmp(text, "/count ", 7) == 0) {
+    HandleCountCommand(chat_id, text + 7);
+  }
+  else if (StrNCmp(text, "/palindrome ", 12) == 0) {
+    HandlePalindromeCommand(chat_id, text + 12);
+  }
+  else if (StrNCmp(text, "/wordcount ", 11) == 0) {
+    HandleWordCountCommand(chat_id, text + 11);
+  }
+  else if (StrNCmp(text, "/upper ", 7) == 0) {
+    HandleUpperCommand(chat_id, text + 7);
+  }
+  else if (StrNCmp(text, "/lower ", 7) == 0) {
+    HandleLowerCommand(chat_id, text + 7);
+  }
+  // Number plugin
+  else if (StrNCmp(text, "/prime ", 7) == 0) {
+    I64 n = StrToI64(text + 7);
+    HandlePrimeCommand(chat_id, n);
+  }
+  else if (StrNCmp(text, "/fib ", 5) == 0) {
+    I64 n = StrToI64(text + 5);
+    HandleFibCommand(chat_id, n);
+  }
+  else if (StrNCmp(text, "/factor ", 8) == 0) {
+    I64 n = StrToI64(text + 8);
+    HandleFactorCommand(chat_id, n);
+  }
+  else if (StrNCmp(text, "/perfect ", 9) == 0) {
+    I64 n = StrToI64(text + 9);
+    HandlePerfectCommand(chat_id, n);
+  }
+  else if (StrNCmp(text, "/collatz ", 9) == 0) {
+    I64 n = StrToI64(text + 9);
+    HandleCollatzCommand(chat_id, n);
+  }
+  else if (StrNCmp(text, "/digitsum ", 10) == 0) {
+    I64 n = StrToI64(text + 10);
+    HandleDigitSumCommand(chat_id, n);
+  }
+  // Fun plugin
+  else if (StrCmp(text, "/joke") == 0) {
+    HandleJokeCommand(chat_id);
+  }
+  else if (StrCmp(text, "/riddle") == 0) {
+    HandleRiddleCommand(chat_id);
+  }
+  else if (StrCmp(text, "/fact") == 0) {
+    HandleFactCommand(chat_id);
+  }
+  else if (StrCmp(text, "/compliment") == 0) {
+    HandleComplimentCommand(chat_id);
+  }
+  else if (StrNCmp(text, "/8ball ", 7) == 0) {
+    Handle8BallCommand(chat_id, text + 7);
+  }
+  // Advanced math plugin
+  else if (StrCmp(text, "/matrix") == 0) {
+    HandleMatrixCommand(chat_id);
+  }
+  else if (StrNCmp(text, "/stats ", 7) == 0) {
+    HandleStatsCommand(chat_id, text + 7);
+  }
+  else if (StrNCmp(text, "/sequence ", 10) == 0) {
+    I64 n = StrToI64(text + 10);
+    HandleSequenceCommand(chat_id, n);
+  }
+  // System plugin
+  else if (StrCmp(text, "/sysinfo") == 0) {
+    HandleSysInfoCommand(chat_id);
+  }
+  else if (StrCmp(text, "/version") == 0) {
+    HandleVersionCommand(chat_id);
+  }
+  else if (StrCmp(text, "/plugins") == 0) {
+    HandlePluginsCommand(chat_id);
+  }
+  else if (StrCmp(text, "/libraries") == 0) {
+    HandleLibrariesCommand(chat_id);
+  }
+  // TempleOS tribute plugin
+  else if (StrCmp(text, "/terry") == 0) {
+    HandleTerryCommand(chat_id);
+  }
+  else if (StrCmp(text, "/templeos") == 0) {
+    HandleTempleOSCommand(chat_id);
+  }
+  else if (StrCmp(text, "/holyc") == 0) {
+    HandleHolyCCommand(chat_id);
+  }
+  else if (StrCmp(text, "/640x480") == 0) {
+    Handle640x480Command(chat_id);
+  }
+  else if (StrCmp(text, "/legacy") == 0) {
+    HandleLegacyCommand(chat_id);
+  }
+  // Grow game plugin
+  else if (StrCmp(text, "/grow") == 0) {
+    HandleGrowCommand(chat_id, user_id, username);
+  }
+  else if (StrCmp(text, "/growtop") == 0) {
+    HandleGrowTopCommand(chat_id, 0);
+  }
+  // Commands list
+  else if (StrCmp(text, "/commands") == 0) {
+    HandleCommandsCommand(chat_id);
+  }
   else {
     HandleAIMessage(chat_id, text);
   }
@@ -448,4 +626,77 @@ U0 TelegramBotMain() {
   while (TRUE) {
     Sleep(100);
   }
+}
+
+U0 HandleCommandsCommand(I64 chat_id) {
+  U8 *commands = "📋 ALL COMMANDS (60+) 📋\n\n"
+    "🎯 CORE:\n"
+    "/start /help /info /version /commands\n"
+    "/sysinfo /plugins /libraries /stats\n\n"
+    "🎮 GAMES:\n"
+    "/grow - Divine growth game (24h cooldown)\n"
+    "/growtop - Top players leaderboard\n"
+    "/dice - Roll divine dice\n"
+    "/coin - Flip divine coin\n"
+    "/rps <choice> - Rock paper scissors\n"
+    "/8ball <question> - Magic 8-ball\n\n"
+    "🔢 MATHEMATICS:\n"
+    "/calc <expr> - Calculator\n"
+    "/math - Random divine math\n"
+    "/prime <n> - Prime check\n"
+    "/fib <n> - Fibonacci number\n"
+    "/factor <n> - Factorization\n"
+    "/perfect <n> - Perfect number\n"
+    "/collatz <n> - Collatz conjecture\n"
+    "/digitsum <n> - Digit sum\n"
+    "/matrix - Random matrix\n"
+    "/sequence <n> - Number sequences\n\n"
+    "🔐 CRYPTOGRAPHY:\n"
+    "/hash <text> - Hash text\n"
+    "/encode <text> - Encode text\n"
+    "/decode <text> - Decode text\n"
+    "/genkey <len> - Generate key\n"
+    "/password <pass> - Check strength\n\n"
+    "📝 TEXT:\n"
+    "/reverse <text> - Reverse text\n"
+    "/count <text> - Count characters\n"
+    "/palindrome <text> - Check palindrome\n"
+    "/wordcount <text> - Count words\n"
+    "/upper <text> - UPPERCASE\n"
+    "/lower <text> - lowercase\n"
+    "/transform <text> - Transform\n\n"
+    "🎨 TEMPLEOS:\n"
+    "/ascii - ASCII art\n"
+    "/colors - 16 colors\n"
+    "/terry - Terry facts\n"
+    "/templeos - About TempleOS\n"
+    "/holyc - About HolyC\n"
+    "/640x480 - About covenant\n"
+    "/legacy - Terry's legacy\n\n"
+    "🌌 COSMOS:\n"
+    "/cosmos - Space facts\n"
+    "/planet <name> - Planet info\n\n"
+    "💡 WISDOM:\n"
+    "/wisdom - Programming wisdom\n"
+    "/proverb - Life proverbs\n"
+    "/quote - Terry's quotes\n"
+    "/bible - Bible verse\n\n"
+    "😄 FUN:\n"
+    "/joke - Programming joke\n"
+    "/riddle - Brain riddle\n"
+    "/fact - Tech fact\n"
+    "/compliment - Get compliment\n\n"
+    "🔮 ORACLE:\n"
+    "/divine - Divine number\n"
+    "/oracle <question> - Ask oracle\n\n"
+    "⏰ TIME:\n"
+    "/time - Current time\n\n"
+    "💾 MEMORY:\n"
+    "/memory save <text> - Save\n"
+    "/memory load - Load\n"
+    "/memory clear - Clear\n\n"
+    "💭 Any message = AI response\n"
+    "\"God said 640x480\" - Terry";
+  
+  SendMessage(chat_id, commands);
 }

@@ -1,0 +1,4 @@
+*.HC linguist-language=C
+*.hc linguist-language=C
+lib/*.HC linguist-language=C
+plugins/*.HC linguist-language=C

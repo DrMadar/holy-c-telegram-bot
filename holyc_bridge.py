@@ -108,8 +108,20 @@ class HolyCBotLogic:
             CREATE INDEX IF NOT EXISTS idx_chat_timestamp 
             ON message_history(chat_id, timestamp DESC)
         ''')
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS grow_game (
+                user_id INTEGER PRIMARY KEY,
+                username TEXT,
+                size INTEGER DEFAULT 0,
+                last_grow INTEGER DEFAULT 0
+            )
+        ''')
+        cursor.execute('''
+            CREATE INDEX IF NOT EXISTS idx_size 
+            ON grow_game(size DESC)
+        ''')
         self.db.commit()
-        logger.info("[HolyC] Memory database initialized with RAG support")
+        logger.info("[HolyC] Memory database initialized with RAG support and grow game")
     
     def save_memory(self, chat_id: int, data: str) -> str:
         """Save user memory"""
@@ -134,6 +146,69 @@ class HolyCBotLogic:
         cursor.execute('DELETE FROM user_memory WHERE chat_id = ?', (chat_id,))
         self.db.commit()
         return "🗑️ Memory cleared. Simplicity restored."
+    
+    def load_game_data(self, user_id: int) -> str:
+        """Load grow game data"""
+        cursor = self.db.cursor()
+        cursor.execute('SELECT size, last_grow FROM grow_game WHERE user_id = ?', (user_id,))
+        result = cursor.fetchone()
+        if result:
+            return f"{result[0]},{result[1]}"
+        return ""
+    
+    def save_game_data(self, user_id: int, username: str, data: str):
+        """Save grow game data"""
+        parts = data.split(',')
+        if len(parts) != 2:
+            return
+        
+        size = int(parts[0])
+        last_grow = int(parts[1])
+        
+        cursor = self.db.cursor()
+        cursor.execute(
+            'INSERT OR REPLACE INTO grow_game (user_id, username, size, last_grow) VALUES (?, ?, ?, ?)',
+            (user_id, username, size, last_grow)
+        )
+        self.db.commit()
+    
+    def get_user_rank(self, user_id: int) -> int:
+        """Get user rank in leaderboard"""
+        cursor = self.db.cursor()
+        cursor.execute('SELECT COUNT(*) + 1 FROM grow_game WHERE size > (SELECT size FROM grow_game WHERE user_id = ?)', (user_id,))
+        result = cursor.fetchone()
+        return result[0] if result else 999
+    
+    def get_top_players(self, page: int = 0) -> str:
+        """Get top players for leaderboard"""
+        cursor = self.db.cursor()
+        offset = page * 10
+        cursor.execute(
+            'SELECT username, size, user_id FROM grow_game ORDER BY size DESC LIMIT 10 OFFSET ?',
+            (offset,)
+        )
+        
+        results = cursor.fetchall()
+        if not results:
+            return ""
+        
+        # Check who can grow (cooldown expired)
+        current_time = int(__import__('time').time())
+        
+        leaderboard = "Top Divine Sizes:\n\n"
+        for idx, (username, size, uid) in enumerate(results, start=offset + 1):
+            # Check if user can grow
+            cursor.execute('SELECT last_grow FROM grow_game WHERE user_id = ?', (uid,))
+            last_grow_result = cursor.fetchone()
+            can_grow = False
+            if last_grow_result:
+                time_diff = current_time - last_grow_result[0]
+                can_grow = time_diff >= 86400
+            
+            marker = " [+]" if can_grow else ""
+            leaderboard += f"{idx} | {username} — {size} cm{marker}\n"
+        
+        return leaderboard
     
     def divine_text_transform(self, text: str) -> str:
         """Divine text transformation"""
@@ -602,6 +677,7 @@ class TelegramBridge:
         """Route Telegram messages to HolyC logic"""
         chat_id = update.effective_chat.id
         user_id = update.effective_user.id
+        username = update.effective_user.username or update.effective_user.first_name or f"User{user_id}"
         text = update.message.text
         chat_type = update.effective_chat.type
         
@@ -629,8 +705,8 @@ class TelegramBridge:
         # Send typing indicator
         await context.bot.send_chat_action(chat_id=chat_id, action="typing")
         
-        # Execute HolyC logic
-        response = self.holyc.ProcessMessage(chat_id, text, user_id)
+        # Execute HolyC logic with user info
+        response = self.holyc.ProcessMessage(chat_id, text, user_id, username)
         
         # Send response via Telegram
         await update.message.reply_text(response)

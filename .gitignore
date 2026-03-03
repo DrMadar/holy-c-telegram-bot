@@ -25,3 +25,7 @@ Desktop.ini
 __pycache__/
 *.pyc
 *.pyo
+
+# Database
+memory.db
+*.db-journal

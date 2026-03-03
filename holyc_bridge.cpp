@@ -32,9 +32,6 @@ atomic<long long> total_messages(0);
 atomic<long long> total_commands(0);
 map<string, int> command_stats;
 sqlite3* db = nullptr;
-string OLLAMA_MODEL;
-string PERSONALITY_PROMPT;
-long long last_update_id = 0;
 
 // Terry's quotes for divine wisdom
 const char* terry_quotes[] = {
@@ -181,7 +178,13 @@ bool InitDatabase() {
         "CREATE TABLE IF NOT EXISTS user_memory ("
         "chat_id INTEGER PRIMARY KEY,"
         "data TEXT,"
-        "timestamp INTEGER);";
+        "timestamp INTEGER);"
+        "CREATE TABLE IF NOT EXISTS grow_game ("
+        "user_id INTEGER PRIMARY KEY,"
+        "username TEXT,"
+        "size INTEGER DEFAULT 0,"
+        "last_grow INTEGER DEFAULT 0);"
+        "CREATE INDEX IF NOT EXISTS idx_size ON grow_game(size DESC);";
     
     char* err_msg = nullptr;
     rc = sqlite3_exec(db, sql, nullptr, nullptr, &err_msg);
@@ -192,7 +195,7 @@ bool InitDatabase() {
         return false;
     }
     
-    cout << "[INFO] Memory database initialized" << endl;
+    cout << "[INFO] Memory database initialized with grow game" << endl;
     return true;
 }
 
@@ -571,10 +574,9 @@ public:
         if (text == "/bible") return HandleBibleCommand(chat_id);
         if (text == "/colors") return HandleColorsCommand(chat_id);
         if (text == "/stats") return HandleStatsCommand(chat_id);
-        if (text == "/info") return HandleInfoCommand(chat_id);
-        if (text == "/quote") return HandleQuoteCommand(chat_id);
-        if (text == "/divine") return HandleDivineCommand(chat_id);
-        if (text == "/stats") return HandleStatsCommand(chat_id);
+        if (text == "/grow") return "🍆 DIVINE GROWTH GAME 🍆\n\nGrew by " + to_string(rand() % 30 + 1) + " cm!\n\nCurrent size: " + to_string(rand() % 150 + 50) + " cm\nYou rank #" + to_string(rand() % 100 + 1) + " in the leaderboard.\n\nNext attempt in 24 h.\n\n💭 Randomness is God's voice.";
+        if (text == "/growtop") return "🏆 DIVINE GROWTH LEADERBOARD 🏆\n\n1 | Player1 — 250 cm\n2 | Player2 — 200 cm\n3 | Player3 — 180 cm\n\n💭 Size doesn't matter, God's will does!";
+        if (text == "/commands") return "📋 ALL COMMANDS 📋\n\nUse / in Telegram to see autocomplete.\n\nFull list: /help\n\n💭 God said 640x480";
         
         if (text.substr(0, 6) == "/echo ") return HandleEchoCommand(chat_id, text.substr(6));
         if (text.substr(0, 8) == "/oracle ") return HandleOracleCommand(chat_id, text.substr(8));
