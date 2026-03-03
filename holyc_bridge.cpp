@@ -1114,27 +1114,6 @@ private:
             SendMessage(chat_id, response);
         }
     }
-            cout << "[DEBUG] No 'message' field in update (might be edited_message or callback)" << endl;
-            return;
-        }
-        
-        string message_part = update_json.substr(message_pos);
-        long long chat_id = extract_json_int(message_part, "id");
-        string text = extract_json_string(message_part, "text");
-        
-        if (text.empty()) {
-            cout << "[DEBUG] Empty text in message" << endl;
-            return;
-        }
-        
-        cout << "[RECV] Chat " << chat_id << ": " << text << endl;
-        
-        string response = holyc.ProcessMessage(chat_id, text);
-        
-        cout << "[SEND] Response: " << response.substr(0, 50) << "..." << endl;
-        
-        SendMessage(chat_id, response);
-    }
     
 public:
     TelegramBridge(const string& token, const string& model) 
@@ -1148,6 +1127,7 @@ public:
                     "&timeout=30";
         
         cout << "[DEBUG] Polling Telegram API (offset=" << last_update_id + 1 << ")" << endl;
+        cout << "[DEBUG] Using token: " << bot_token.substr(0, 10) << "..." << endl;
         
         string response = http_request(url, "", true);
         
@@ -1160,7 +1140,7 @@ public:
         
         size_t result_pos = response.find("\"result\":[");
         if (result_pos == string::npos) {
-            cout << "[WARN] No 'result' field in response" << endl;
+            cout << "[WARN] No 'result' field in response: " << response << endl;
             return;
         }
         
